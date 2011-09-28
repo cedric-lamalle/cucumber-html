@@ -113,7 +113,11 @@ Cucumber.DOMFormatter = function(rootNode) {
         populateComments(e, statement.comments);
         e.find('.keyword').text(statement.keyword);
         e.find('.name').text(statement.name);
-        e.find('.description').text(statement.description);
+        if (statement.description !== undefined && statement.description !== '') {
+            e.find('.description').text(statement.description);
+        } else {
+            e.find('.description').remove();
+        }
         e.attr('itemtype', 'http://cukes.info/microformat/' + itemtype);
         e.addClass(itemtype);
         return e;
