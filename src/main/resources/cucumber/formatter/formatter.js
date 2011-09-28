@@ -8,7 +8,8 @@ Cucumber.DOMFormatter = function(rootNode) {
 
     var currentStepIndex;
     var currentStep;
-
+    var currentStepNodeType;
+    
     this.uri = function(uri) {
         currentUri = uri;
     };
@@ -19,17 +20,17 @@ Cucumber.DOMFormatter = function(rootNode) {
 
     this.background = function(background) {
         currentElement = featureElement(background, 'background');
-        currentStepIndex = 1;
+        resetCurrentStepProperties('li');
     };
 
     this.scenario = function(scenario) {
         currentElement = featureElement(scenario, 'scenario');
-        currentStepIndex = 1;
+        resetCurrentStepProperties('li');
     };
 
     this.scenarioOutline = function(scenarioOutline) {
         currentElement = featureElement(scenarioOutline, 'scenario_outline');
-        currentStepIndex = 1;
+        resetCurrentStepProperties('li');
     };
 
     this.step = function(step) {
@@ -60,7 +61,7 @@ Cucumber.DOMFormatter = function(rootNode) {
         var examplesElement = blockElement(currentElement.children('details'), examples, 'examples');
         var examplesTable = $('#cucumber-templates .examples_table').clone();
         examplesTable.appendTo(examplesElement.children('details'));
-
+        currentSteps = examplesTable;
         $.each(examples.rows, function(index, row) {
             var parent = index == 0 ? examplesTable.find('thead') : examplesTable.find('tbody');
             var tr = $('<tr></tr>').appendTo(parent);
@@ -68,17 +69,18 @@ Cucumber.DOMFormatter = function(rootNode) {
                 var td = $('<td>' + cell + '</td>').appendTo(tr);
             });
         });
+        resetCurrentStepProperties('tbody tr');
     };
 
     this.match = function(match) {
-        currentStep = currentSteps.find('li:nth-child(' + currentStepIndex + ')');
+        currentStep = currentSteps.find(currentStepNodeType + ':nth-child(' + currentStepIndex + ')');
         currentStepIndex++;
     };
 
     this.result = function(result) {
         currentStep.addClass(result.status);
         currentElement.addClass(result.status);
-        var isLastStep = currentSteps.find('li:nth-child(' + currentStepIndex + ')').length == 0;
+        var isLastStep = currentSteps.find(currentStepNodeType + ':nth-child(' + currentStepIndex + ')').length == 0;
         if(isLastStep) {
             if(currentSteps.find('.failed').length == 0) {
                 // No failed steps. Collapse it.
@@ -95,10 +97,8 @@ Cucumber.DOMFormatter = function(rootNode) {
 
     function featureElement(statement, itemtype) {
         var e = blockElement(currentFeature.children('details'), statement, itemtype);
-
         currentSteps = $('#cucumber-templates .steps').clone();
         currentSteps.appendTo(e.children('details'));
-
         return e;
     }
 
@@ -137,6 +137,11 @@ Cucumber.DOMFormatter = function(rootNode) {
                 tagNode.text(tag.name);
             });
         }
+    }
+    
+    function resetCurrentStepProperties(stepNodeType) {
+        currentStepIndex = 1;
+        currentStepNodeType = stepNodeType;
     }
 };
 
