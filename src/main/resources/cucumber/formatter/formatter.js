@@ -140,6 +140,12 @@ Cucumber.DOMFormatter = function(rootNode) {
     }
 };
 
+$(document).ready(function() {
+    $('.cucumber-report .controlpanel #showHideTags').click(function() {
+        $('.cucumber-report .tags').toggle('fast');
+    });
+});
+
 if (typeof module !== 'undefined') {
     module.exports = Cucumber;
 }

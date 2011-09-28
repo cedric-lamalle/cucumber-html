@@ -83,3 +83,9 @@
 #cucumber-templates {
   display: none;
 }
+
+.cucumber-report .controlpanel {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+}
